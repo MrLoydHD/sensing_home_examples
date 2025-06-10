@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import SteeringWheel3D from './components/SteeringWheel3D';
 import StateSelector from './components/StateSelector';
 import CurrentStateView from './components/CurrentStateView';
@@ -20,11 +20,27 @@ const SteeringWheelConceptWithFeatures = () => {
   const [lastAction, setLastAction] = useState<string | null>(null);
   const [showHapticFeedback, setShowHapticFeedback] = useState(false);
   const [handPosition, setHandPosition] = useState({ left: false, right: false });
+  const [speed, setSpeed] = useState(65);
+  const [showContactsList, setShowContactsList] = useState(false);
+  const [selectedContactIndex, setSelectedContactIndex] = useState(0);
+  const [isInCall, setIsInCall] = useState(false);
+  const [phoneClickCount, setPhoneClickCount] = useState(0);
   const contextualButtons = useMemo(() => ({
     'drive': ['Media', 'Phone', 'Voice', 'Cruise'],
     'cruise': ['Speed+', 'Speed-', 'Distance', 'Cancel'],
     'parking': ['Camera', 'Sensors', 'Park Assist', 'Emergency']
   }), []);
+
+  const contacts = useMemo(() => [
+    { id: '1', name: 'John Smith', number: '+1-555-0123' },
+    { id: '2', name: 'Sarah Johnson', number: '+1-555-0456' },
+    { id: '3', name: 'Mike Davis', number: '+1-555-0789' },
+    { id: '4', name: 'Emily Wilson', number: '+1-555-0321' },
+    { id: '5', name: 'Chris Brown', number: '+1-555-0654' },
+    { id: '6', name: 'Lisa Garcia', number: '+1-555-0987' },
+    { id: '7', name: 'David Miller', number: '+1-555-0246' },
+    { id: '8', name: 'Anna Taylor', number: '+1-555-0135' }
+  ], []);
 
   const triggerHapticFeedback = useCallback((action: string | null, intensity: 'light' | 'medium' | 'strong' = 'medium') => {
     setLastAction(action);
@@ -74,6 +90,11 @@ const SteeringWheelConceptWithFeatures = () => {
       // Intentional press
       setActiveButton(button);
       triggerHapticFeedback(`${button} pressed`, 'strong');
+      
+      // Handle phone button special functionality
+      if (button === 'Phone') {
+        handlePhoneButtonPress();
+      }
     }
   }, [activeButton, triggerHapticFeedback]);
 
@@ -95,6 +116,64 @@ const SteeringWheelConceptWithFeatures = () => {
       triggerHapticFeedback('Safety alert: Keep both hands on wheel', 'strong');
     }
   }, [triggerHapticFeedback]);
+
+  const handlePhoneButtonPress = useCallback(() => {
+    setPhoneClickCount(prev => {
+      const newCount = prev + 1;
+      
+      if (newCount === 1) {
+        // First click - show contacts list
+        setShowContactsList(true);
+        triggerHapticFeedback('Contacts list opened', 'medium');
+        
+        // Reset click count after 2 seconds if no second click
+        setTimeout(() => {
+          setPhoneClickCount(0);
+        }, 2000);
+      } else if (newCount === 2) {
+        // Second click - call selected contact
+        const selectedContact = contacts[selectedContactIndex];
+        setIsInCall(true);
+        setShowContactsList(false);
+        triggerHapticFeedback(`Calling ${selectedContact.name}`, 'strong');
+        
+        // Simulate call duration
+        setTimeout(() => {
+          setIsInCall(false);
+          triggerHapticFeedback('Call ended', 'medium');
+        }, 10000);
+        
+        setPhoneClickCount(0);
+      }
+      
+      return newCount;
+    });
+  }, [contacts, selectedContactIndex, triggerHapticFeedback]);
+
+  const handleContactScroll = useCallback((direction: 'up' | 'down') => {
+    setSelectedContactIndex(prev => {
+      const newIndex = direction === 'up' 
+        ? Math.max(0, prev - 1)
+        : Math.min(contacts.length - 1, prev + 1);
+      
+      const contact = contacts[newIndex];
+      triggerHapticFeedback(`Selected ${contact.name}`, 'light');
+      
+      return newIndex;
+    });
+  }, [contacts, triggerHapticFeedback]);
+
+  // Simulate speed changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSpeed(prev => {
+        const change = (Math.random() - 0.5) * 4; // Random change between -2 and +2
+        return Math.max(0, Math.min(120, prev + change));
+      });
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto p-6 md:p-8">
@@ -136,6 +215,11 @@ const SteeringWheelConceptWithFeatures = () => {
               handPosition={handPosition}
               onButtonPress={handlePressure}
               onHandPositionChange={handleHandPosition}
+              speed={Math.round(speed)}
+              showContactsList={showContactsList}
+              contacts={contacts}
+              selectedContact={contacts[selectedContactIndex]?.id}
+              onScroll={handleContactScroll}
             />
           </div>
         </div>
@@ -150,6 +234,49 @@ const SteeringWheelConceptWithFeatures = () => {
 
         {/* Accessibility Controls */}
         <AccessibilityControls />
+
+        {/* Phone Status Display */}
+        {(showContactsList || isInCall) && (
+          <div className="bg-blue-50 p-4 rounded-lg mt-4 border border-blue-200">
+            <h3 className="font-bold text-blue-700 flex items-center gap-2">
+              <span>📱</span> Phone Status
+            </h3>
+            {isInCall && (
+              <div className="text-green-700 font-semibold mt-2">
+                📞 In call with {contacts[selectedContactIndex]?.name}
+                <div className="text-sm text-gray-600 mt-1">
+                  Call will end automatically in 10 seconds
+                </div>
+              </div>
+            )}
+            {showContactsList && !isInCall && (
+              <div className="text-blue-700 mt-2">
+                📋 Contacts list open - Selected: {contacts[selectedContactIndex]?.name}
+                <div className="text-sm text-gray-600 mt-1">
+                  Scroll on the back of the steering wheel to navigate, click Phone again to call
+                </div>
+              </div>
+            )}
+            {phoneClickCount === 1 && (
+              <div className="text-orange-600 text-sm mt-2">
+                ⏱️ Click Phone button again within 2 seconds to call
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Speed Display */}
+        <div className="bg-green-50 p-4 rounded-lg mt-4 border border-green-200">
+          <h3 className="font-bold text-green-700 flex items-center gap-2">
+            <span>🚗</span> Vehicle Speed
+          </h3>
+          <div className="text-green-700 font-mono text-2xl mt-2">
+            {Math.round(speed)} km/h
+          </div>
+          <div className="text-sm text-gray-600 mt-1">
+            Speed updates automatically (simulated)
+          </div>
+        </div>
 
         {/* Interactive Demo Section */}
         <InteractionDemo 

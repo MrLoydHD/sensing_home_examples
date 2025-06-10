@@ -11,6 +11,12 @@ interface SteeringWheel3DModelProps {
   onButtonPress: (pressure: number, button: string) => void;
   onHandPositionChange: (left: boolean, right: boolean) => void;
   onLoad?: () => void;
+  speed?: number;
+  showContactsList?: boolean;
+  contacts?: Array<{id: string, name: string, number: string}>;
+  selectedContact?: string | null;
+  onContactSelect?: (contactId: string) => void;
+  onScroll?: (direction: 'up' | 'down') => void;
 }
 
 // Tactile button component
@@ -89,14 +95,17 @@ function TactileButton({
         />
       </mesh>
       
-      <mesh position={[0, 0, 0.02]}>
-        <planeGeometry args={[0.15, 0.15]} />
-        <meshBasicMaterial 
-          color={isActive ? '#ffffff' : '#666666'}
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
+      {/* Button label text */}
+      <Text
+        position={[0, 0, 0.03]}
+        fontSize={0.08}
+        color={isActive ? '#ffffff' : '#cccccc'}
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={0.4}
+      >
+        {label}
+      </Text>
       
       {pressed && (
         <mesh position={[0, 0, -0.01]} scale={[pressure / 100, pressure / 100, 1]}>
@@ -116,9 +125,17 @@ export default function SteeringWheel3DModel({
   handPosition,
   onButtonPress,
   onHandPositionChange,
-  onLoad
+  onLoad,
+  speed = 0,
+  showContactsList = false,
+  contacts = [],
+  selectedContact = null,
+  onContactSelect,
+  onScroll
 }: SteeringWheel3DModelProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const backWheelRef = useRef<THREE.Mesh>(null);
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null);
   const { scene } = useGLTF('/Normal Steering Wheel/scene.gltf');
   
   // Button configurations - adjusted for larger model
@@ -184,6 +201,8 @@ export default function SteeringWheel3DModel({
     }
   };
 
+  // Scroll handling is now inline in the mesh component for better control
+
   return (
     <group ref={groupRef}>
       {/* 3D Model */}
@@ -214,40 +233,130 @@ export default function SteeringWheel3DModel({
         </Text>
       </group>
 
-      {/* Hand grip areas - adjusted for larger wheel */}
-      <group>
-        <mesh 
-          position={[-3.5, 0, 0.5]}
-          onPointerEnter={() => handleGripHover(true, true)}
-          onPointerLeave={() => handleGripHover(true, false)}
-        >
-          <RoundedBox args={[0.8, 1.2, 0.15]} radius={0.05} smoothness={4}>
-            <meshStandardMaterial 
-              color={handPosition.left ? '#059669' : '#1a1a1a'}
-              transparent
-              opacity={0.6}
-              emissive={handPosition.left ? '#059669' : '#000000'}
-              emissiveIntensity={handPosition.left ? 0.3 : 0}
-            />
-          </RoundedBox>
-        </mesh>
-
-        <mesh 
-          position={[3.5, 0, 0.5]}
-          onPointerEnter={() => handleGripHover(false, true)}
-          onPointerLeave={() => handleGripHover(false, false)}
-        >
-          <RoundedBox args={[0.8, 1.2, 0.15]} radius={0.05} smoothness={4}>
-            <meshStandardMaterial 
-              color={handPosition.right ? '#059669' : '#1a1a1a'}
-              transparent
-              opacity={0.6}
-              emissive={handPosition.right ? '#059669' : '#000000'}
-              emissiveIntensity={handPosition.right ? 0.3 : 0}
-            />
-          </RoundedBox>
-        </mesh>
+      {/* Main Display - Behind the wheel */}
+      <group position={[0, 1.2, -0.8]} rotation={[0, 0, 0]}>
+        <RoundedBox args={[2.5, 1.8, 0.05]} radius={0.1} smoothness={4}>
+          <meshStandardMaterial 
+            color="#000000"
+            transparent
+            opacity={0.4}
+            metalness={0.8}
+            roughness={0.2}
+          />
+        </RoundedBox>
+        
+        {showContactsList ? (
+          // Contacts view with speed in corner
+          <>
+            {/* Contacts header - left side */}
+            <Text
+              position={[-0.6, 0.6, 0.03]}
+              fontSize={0.15}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+            >
+              📞 CONTACTS
+            </Text>
+            
+            {/* Speed - right side */}
+            <group position={[0.6, 0.6, 0.03]}>
+              <Text
+                fontSize={0.15}
+                color="#00ff00"
+                anchorX="center"
+                anchorY="middle"
+              >
+                {speed} km/h
+              </Text>
+            </group>
+            
+            {/* Contact list */}
+            {contacts.slice(0, 4).map((contact, index) => (
+              <group key={contact.id} position={[0, 0.2 - index * 0.25, 0.03]}>
+                <Text
+                  fontSize={0.12}
+                  color={selectedContact === contact.id ? '#00ff00' : '#ffffff'}
+                  anchorX="center"
+                  anchorY="middle"
+                  maxWidth={2.2}
+                >
+                  {contact.name}
+                </Text>
+                {selectedContact === contact.id && (
+                  <mesh position={[0, 0, -0.01]}>
+                    <RoundedBox args={[2.2, 0.2, 0.01]} radius={0.02} smoothness={4}>
+                      <meshStandardMaterial 
+                        color="#00ff00"
+                        transparent
+                        opacity={0.3}
+                        emissive="#00ff00"
+                        emissiveIntensity={0.2}
+                      />
+                    </RoundedBox>
+                  </mesh>
+                )}
+              </group>
+            ))}
+          </>
+        ) : (
+          // Speed-only view
+          <>
+            <Text
+              position={[0, 0.2, 0.03]}
+              fontSize={0.4}
+              color="#00ff00"
+              anchorX="center"
+              anchorY="middle"
+            >
+              {speed}
+            </Text>
+            <Text
+              position={[0, -0.2, 0.03]}
+              fontSize={0.12}
+              color="#00ff00"
+              anchorX="center"
+              anchorY="middle"
+            >
+              km/h
+            </Text>
+          </>
+        )}
       </group>
+
+      {/* Back of steering wheel - scrollable area */}
+      <mesh 
+        ref={backWheelRef}
+        position={[0, 0, -0.2]}
+        onWheel={(e) => {
+          if (showContactsList && onScroll) {
+            // Reduced sensitivity by requiring larger delta
+            if (Math.abs(e.deltaY) > 5) {
+              const direction = e.deltaY > 0 ? 'down' : 'up';
+              setScrollDirection(direction);
+              onScroll(direction);
+              setTimeout(() => setScrollDirection(null), 300);
+            }
+          }
+        }}
+        onPointerMove={(e) => {
+          if (showContactsList && Math.abs(e.movementY) > 3) {
+            const direction = e.movementY > 0 ? 'down' : 'up';
+            setScrollDirection(direction);
+            onScroll?.(direction);
+            setTimeout(() => setScrollDirection(null), 200);
+          }
+        }}
+      >
+        <circleGeometry args={[3, 32]} />
+        <meshStandardMaterial 
+          color={scrollDirection ? '#1e40af' : '#0a0a0a'}
+          transparent
+          opacity={showContactsList ? 0.15 : 0.05}
+          emissive={scrollDirection ? '#1e40af' : '#000000'}
+          emissiveIntensity={scrollDirection ? 0.3 : 0}
+        />
+      </mesh>
 
       {/* Contextual buttons */}
       {activeState !== 'inactive' && (

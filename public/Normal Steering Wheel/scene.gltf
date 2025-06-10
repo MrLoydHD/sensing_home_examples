@@ -1,0 +1,627 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 25576,
+      "max": [
+        2.5766799449920654,
+        2.436476230621338,
+        0.3017165958881378
+      ],
+      "min": [
+        -2.5766799449920654,
+        -2.3543384075164795,
+        -0.3017165958881378
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 306912,
+      "componentType": 5126,
+      "count": 25576,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 25576,
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 25576,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 204608,
+      "componentType": 5126,
+      "count": 25576,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 409216,
+      "componentType": 5126,
+      "count": 25576,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 151200,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 613824,
+      "componentType": 5126,
+      "count": 8349,
+      "max": [
+        2.4233920574188232,
+        2.3137171268463135,
+        0.12171339988708496
+      ],
+      "min": [
+        -2.4233920574188232,
+        -2.1861016750335693,
+        -0.07087679207324982
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 714012,
+      "componentType": 5126,
+      "count": 8349,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 409216,
+      "componentType": 5126,
+      "count": 8349,
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 613824,
+      "componentType": 5126,
+      "count": 8349,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 680616,
+      "componentType": 5126,
+      "count": 8349,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 747408,
+      "componentType": 5126,
+      "count": 8349,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 604800,
+      "componentType": 5125,
+      "count": 49872,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 814200,
+      "componentType": 5126,
+      "count": 1301,
+      "max": [
+        0.589516282081604,
+        0.560309648513794,
+        -0.05301183462142944
+      ],
+      "min": [
+        -0.589516282081604,
+        -0.6187229156494141,
+        -1.0261812210083008
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 829812,
+      "componentType": 5126,
+      "count": 1301,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 814200,
+      "componentType": 5126,
+      "count": 1301,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 824608,
+      "componentType": 5126,
+      "count": 1301,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 835016,
+      "componentType": 5126,
+      "count": 1301,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 804288,
+      "componentType": 5125,
+      "count": 6816,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 845424,
+      "componentType": 5126,
+      "count": 1999,
+      "max": [
+        0.656582236289978,
+        1.9705636501312256,
+        0.22374960780143738
+      ],
+      "min": [
+        -0.6511493921279907,
+        -0.51077800989151,
+        0.04331353306770325
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 869412,
+      "componentType": 5126,
+      "count": 1999,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 845424,
+      "componentType": 5126,
+      "count": 1999,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 831552,
+      "componentType": 5125,
+      "count": 9114,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "generator": "fab-model-conversion",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 868008,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 861416,
+      "byteOffset": 868008,
+      "byteStride": 8,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 893400,
+      "byteOffset": 1729424,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 542800,
+      "byteOffset": 2622824,
+      "byteStride": 16,
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 3165624,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_materials_specular"
+  ],
+  "images": [
+    {
+      "uri": "textures/steering_Leather_baseColor.png"
+    },
+    {
+      "uri": "textures/steering_Leather_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/steering_Leather_normal.png"
+    },
+    {
+      "uri": "textures/steering_Leather_specular_f0.png"
+    },
+    {
+      "uri": "textures/steering_Strut_baseColor.png"
+    },
+    {
+      "uri": "textures/steering_Strut_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/steering_Strut_normal.png"
+    },
+    {
+      "uri": "textures/steering_Strut_specular_f0.png"
+    },
+    {
+      "uri": "textures/steering_Base_baseColor.png"
+    },
+    {
+      "uri": "textures/steering_Base_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/steering_Base_specular_f0.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_specular": {
+          "specularColorFactor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "specularFactor": 1.0,
+          "specularTexture": {
+            "index": 3
+          }
+        }
+      },
+      "name": "steering_Leather",
+      "normalTexture": {
+        "index": 2
+      },
+      "occlusionTexture": {
+        "index": 1
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "metallicRoughnessTexture": {
+          "index": 1
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_specular": {
+          "specularColorFactor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "specularFactor": 1.0,
+          "specularTexture": {
+            "index": 7
+          }
+        }
+      },
+      "name": "steering_Strut",
+      "normalTexture": {
+        "index": 6
+      },
+      "occlusionTexture": {
+        "index": 5
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 4
+        },
+        "metallicRoughnessTexture": {
+          "index": 5
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_specular": {
+          "specularColorFactor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "specularFactor": 1.0,
+          "specularTexture": {
+            "index": 10
+          }
+        }
+      },
+      "name": "steering_Base",
+      "occlusionTexture": {
+        "index": 9
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 8
+        },
+        "metallicRoughnessTexture": {
+          "index": 9
+        }
+      }
+    },
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_specular": {
+          "specularFactor": 1
+        }
+      },
+      "name": "Logo",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.542932,
+          0.542932,
+          0.542932,
+          1.0
+        ],
+        "roughnessFactor": 0.13257183259987076
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "shutt S3RR_steering Leather_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3,
+            "TEXCOORD_1": 4,
+            "TEXCOORD_2": 5
+          },
+          "indices": 6,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "shutt S3RR_steering Strut_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 8,
+            "POSITION": 7,
+            "TANGENT": 9,
+            "TEXCOORD_0": 10,
+            "TEXCOORD_1": 11,
+            "TEXCOORD_2": 12
+          },
+          "indices": 13,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "shutt S3RR_steering Base_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 15,
+            "POSITION": 14,
+            "TEXCOORD_0": 16,
+            "TEXCOORD_1": 17,
+            "TEXCOORD_2": 18
+          },
+          "indices": 19,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "shutt S3RR_Logo_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 21,
+            "POSITION": 20,
+            "TEXCOORD_0": 22
+          },
+          "indices": 23,
+          "material": 3,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "75738689b1534b9b8da9b31054b3c68a.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "shutt S3RR"
+    },
+    {
+      "mesh": 0,
+      "name": "shutt S3RR_steering Leather_0"
+    },
+    {
+      "mesh": 1,
+      "name": "shutt S3RR_steering Strut_0"
+    },
+    {
+      "mesh": 2,
+      "name": "shutt S3RR_steering Base_0"
+    },
+    {
+      "mesh": 3,
+      "name": "shutt S3RR_Logo_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    },
+    {
+      "sampler": 0,
+      "source": 3
+    },
+    {
+      "sampler": 0,
+      "source": 4
+    },
+    {
+      "sampler": 0,
+      "source": 5
+    },
+    {
+      "sampler": 0,
+      "source": 6
+    },
+    {
+      "sampler": 0,
+      "source": 7
+    },
+    {
+      "sampler": 0,
+      "source": 8
+    },
+    {
+      "sampler": 0,
+      "source": 9
+    },
+    {
+      "sampler": 0,
+      "source": 10
+    }
+  ]
+}

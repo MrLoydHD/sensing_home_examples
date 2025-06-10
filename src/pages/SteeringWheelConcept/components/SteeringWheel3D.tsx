@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect, Suspense, lazy } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Environment, ContactShadows, Text, RoundedBox, useTexture, MeshReflectorMaterial, useGLTF, useFBX } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Environment, ContactShadows, Text, RoundedBox, useTexture, MeshReflectorMaterial, useGLTF, useFBX, useProgress, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import LoadingSpinner from './LoadingSpinner';
 
 // Lazy load the 3D model component
 const SteeringWheel3DModel = lazy(() => import('./SteeringWheel3DModel'));
@@ -37,20 +38,20 @@ function TactileButton({
   const [pressure, setPressure] = useState(0);
 
   useFrame((state) => {
-    if (meshRef.current) {
-      // Subtle pulsing when active
-      if (isActive) {
-        meshRef.current.scale.setScalar(1 + Math.sin(state.clock.elapsedTime * 3) * 0.02);
-      }
-      
-      // Smooth pressure animation
-      if (pressed) {
-        setPressure(prev => Math.min(prev + 5, 100));
-        meshRef.current.position.z = -0.02; // Button press effect
-      } else {
-        setPressure(prev => Math.max(prev - 10, 0));
-        meshRef.current.position.z = 0;
-      }
+    if (!meshRef.current) return;
+    
+    // Only animate if state changes
+    if (isActive && state.clock.elapsedTime % 0.1 < 0.05) {
+      meshRef.current.scale.setScalar(1 + Math.sin(state.clock.elapsedTime * 3) * 0.02);
+    }
+    
+    // Smooth pressure animation with less frequent updates
+    if (pressed && pressure < 100) {
+      setPressure(prev => Math.min(prev + 10, 100));
+      meshRef.current.position.z = -0.02;
+    } else if (!pressed && pressure > 0) {
+      setPressure(prev => Math.max(prev - 20, 0));
+      meshRef.current.position.z = 0;
     }
   });
 
@@ -64,7 +65,7 @@ function TactileButton({
     <group position={position}>
       {/* Raised tactile guide - more subtle */}
       <mesh position={[0, 0, 0.01]}>
-        <ringGeometry args={[0.25, 0.28, 32]} />
+        <ringGeometry args={[0.25, 0.28, 16]} />
         <meshStandardMaterial 
           color="#2a2a2a"
           metalness={0.8}
@@ -83,7 +84,7 @@ function TactileButton({
         onPointerUp={() => setPressed(false)}
         castShadow
       >
-        <circleGeometry args={[0.25, 32]} />
+        <circleGeometry args={[0.25, 16]} />
         <meshStandardMaterial 
           color={pressed ? '#1a1a1a' : '#2d2d2d'}
           emissive={hovered ? glowColor : '#000000'}
@@ -106,11 +107,26 @@ function TactileButton({
       {/* Pressure indicator ring */}
       {pressed && (
         <mesh position={[0, 0, -0.01]} scale={[pressure / 100, pressure / 100, 1]}>
-          <ringGeometry args={[0.28, 0.32, 32]} />
+          <ringGeometry args={[0.28, 0.32, 16]} />
           <meshBasicMaterial color={glowColor} transparent opacity={0.3} />
         </mesh>
       )}
     </group>
+  );
+}
+
+// Loading component that shows progress
+function Loader() {
+  const { progress } = useProgress();
+  return (
+    <Html center>
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <p className="mt-4 text-gray-400 text-sm">
+          Loading 3D Model... {progress.toFixed(0)}%
+        </p>
+      </div>
+    </Html>
   );
 }
 
@@ -134,14 +150,21 @@ class ErrorBoundary extends React.Component<{
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback;
+      return (
+        <Html center>
+          <div className="text-center">
+            <p className="text-red-500 text-sm">Failed to load 3D model</p>
+            <p className="text-gray-400 text-xs mt-2">Using simplified view</p>
+          </div>
+        </Html>
+      );
     }
     return this.props.children;
   }
 }
 
-// Fallback procedural steering wheel
-function ProceduralSteeringWheel({ 
+// Simplified fallback steering wheel (only shown on error)
+function FallbackSteeringWheel({ 
   activeState, 
   currentMode, 
   activeButton,
@@ -175,7 +198,10 @@ function ProceduralSteeringWheel({
   };
 
   useFrame((state) => {
-    if (wheelRef.current) {
+    if (!wheelRef.current || activeState === 'inactive') return;
+    
+    // Only animate every few frames
+    if (state.clock.elapsedTime % 0.05 < 0.025) {
       wheelRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.01;
       wheelRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.7) * 0.02;
     }
@@ -194,7 +220,7 @@ function ProceduralSteeringWheel({
       <group ref={wheelRef}>
         {/* Main wheel rim */}
         <mesh castShadow receiveShadow>
-          <torusGeometry args={[2, 0.25, 8, 100]} />
+          <torusGeometry args={[2, 0.25, 6, 32]} />
           <meshStandardMaterial 
             color="#1a1a1a"
             metalness={0.3}
@@ -206,7 +232,7 @@ function ProceduralSteeringWheel({
 
         {/* Leather wrap texture simulation */}
         <mesh>
-          <torusGeometry args={[2, 0.26, 16, 100]} />
+          <torusGeometry args={[2, 0.26, 8, 32]} />
           <meshStandardMaterial 
             color="#0a0a0a"
             metalness={0.1}
@@ -219,7 +245,7 @@ function ProceduralSteeringWheel({
         {/* Center hub */}
         <group>
           <mesh position={[0, 0, 0.1]} castShadow>
-            <cylinderGeometry args={[0.7, 0.75, 0.2, 32]} />
+            <cylinderGeometry args={[0.7, 0.75, 0.2, 16]} />
             <meshStandardMaterial 
               color="#1f1f1f"
               metalness={0.8}
@@ -228,7 +254,7 @@ function ProceduralSteeringWheel({
           </mesh>
           
           <mesh position={[0, 0, 0.2]}>
-            <torusGeometry args={[0.65, 0.05, 8, 32]} />
+            <torusGeometry args={[0.65, 0.05, 6, 16]} />
             <meshStandardMaterial 
               color="#ffffff"
               metalness={1}
@@ -237,7 +263,7 @@ function ProceduralSteeringWheel({
           </mesh>
 
           <mesh position={[0, 0, 0.21]}>
-            <circleGeometry args={[0.6, 32]} />
+            <circleGeometry args={[0.6, 16]} />
             <meshStandardMaterial 
               color="#0f0f0f"
               metalness={0.9}
@@ -340,17 +366,7 @@ function ProceduralSteeringWheel({
           </group>
         )}
 
-        {/* Perforated leather detail */}
-        <group>
-          {[-1.4, 1.4].map((x) => 
-            [-0.9, 0.9].map((y) => (
-              <mesh key={`${x}-${y}`} position={[x, y, 0.3]}>
-                <circleGeometry args={[0.02, 16]} />
-                <meshStandardMaterial color="#000000" />
-              </mesh>
-            ))
-          )}
-        </group>
+        {/* Perforated leather detail - removed for performance */}
       </group>
 
       {/* Safety indicator */}
@@ -371,60 +387,70 @@ function ProceduralSteeringWheel({
 
 // Main 3D view component with better lighting and environment
 export default function SteeringWheel3D(props: SteeringWheel3DProps) {
+  const [modelLoaded, setModelLoaded] = useState(false);
+  
   return (
-    <div className="h-[600px] bg-gradient-to-b from-gray-900 to-gray-800 rounded-lg overflow-hidden">
-      <Canvas shadows camera={{ position: [0, 2, 8], fov: 40 }}>
-        <PerspectiveCamera makeDefault position={[0, 2, 8]} fov={40} />
-        <OrbitControls 
-          enablePan={false}
-          minDistance={5}
-          maxDistance={10}
-          maxPolarAngle={Math.PI / 1.8}
-          target={[0, 0, 0]}
-        />
-        
-        {/* Better lighting setup */}
-        <ambientLight intensity={0.3} />
-        <directionalLight 
-          position={[5, 8, 5]} 
-          intensity={1.2} 
-          castShadow 
-          shadow-mapSize={[2048, 2048]}
-          shadow-camera-near={0.1}
-          shadow-camera-far={20}
-          shadow-camera-left={-5}
-          shadow-camera-right={5}
-          shadow-camera-top={5}
-          shadow-camera-bottom={-5}
-        />
-        <pointLight position={[-5, 5, -5]} intensity={0.3} color="#60a5fa" />
-        <pointLight position={[0, -3, 3]} intensity={0.2} color="#ffffff" />
-        
-        <Suspense fallback={<ProceduralSteeringWheel {...props} />}>
-          <ErrorBoundary fallback={<ProceduralSteeringWheel {...props} />}>
-            <SteeringWheel3DModel {...props} />
-          </ErrorBoundary>
-        </Suspense>
+    <div className="h-[600px] relative">
+      {!modelLoaded && (
+        <div className="absolute inset-0 z-10">
+          <LoadingSpinner />
+        </div>
+      )}
+      <div className={`h-full transition-opacity duration-500 ${!modelLoaded ? 'opacity-0' : 'opacity-100'}`}>
+        <Canvas 
+          shadows 
+          camera={{ position: [0, 2, 8], fov: 40 }}
+          dpr={[1, 1.5]}
+          performance={{ min: 0.5 }}
+          className="bg-gradient-to-b from-gray-900 to-gray-800 rounded-lg"
+        >
+          <PerspectiveCamera makeDefault position={[0, 2, 8]} fov={40} />
+          <OrbitControls 
+            enablePan={false}
+            minDistance={5}
+            maxDistance={10}
+            maxPolarAngle={Math.PI / 1.8}
+            target={[0, 0, 0]}
+          />
+          
+          {/* Optimized lighting setup */}
+          <ambientLight intensity={0.4} />
+          <directionalLight 
+            position={[5, 8, 5]} 
+            intensity={1} 
+            castShadow 
+            shadow-mapSize={[512, 512]}
+            shadow-camera-near={0.1}
+            shadow-camera-far={15}
+            shadow-camera-left={-3}
+            shadow-camera-right={3}
+            shadow-camera-top={3}
+            shadow-camera-bottom={-3}
+          />
+          <pointLight position={[-5, 5, -5]} intensity={0.2} color="#60a5fa" />
+          
+          <Suspense fallback={<Loader />}>
+            <ErrorBoundary fallback={<FallbackSteeringWheel {...props} />}>
+              <SteeringWheel3DModel 
+                {...props} 
+                onLoad={() => setModelLoaded(true)}
+              />
+            </ErrorBoundary>
+          </Suspense>
         
         {/* Ground with reflection */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
           <planeGeometry args={[20, 20]} />
-          <MeshReflectorMaterial
-            blur={[300, 100]}
-            resolution={2048}
-            mixBlur={1}
-            mixStrength={80}
-            roughness={1}
-            depthScale={1.2}
-            minDepthThreshold={0.4}
-            maxDepthThreshold={1.4}
+          <meshStandardMaterial 
             color="#151515"
-            metalness={0.5}
+            metalness={0.3}
+            roughness={0.8}
           />
         </mesh>
         
-        <Environment preset="city" background={false} />
-      </Canvas>
+        {/* Environment removed for performance */}
+        </Canvas>
+      </div>
     </div>
   );
 }

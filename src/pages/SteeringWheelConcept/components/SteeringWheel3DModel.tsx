@@ -10,6 +10,7 @@ interface SteeringWheel3DModelProps {
   handPosition: { left: boolean; right: boolean };
   onButtonPress: (pressure: number, button: string) => void;
   onHandPositionChange: (left: boolean, right: boolean) => void;
+  onLoad?: () => void;
 }
 
 // Tactile button component
@@ -34,18 +35,20 @@ function TactileButton({
   const [pressure, setPressure] = useState(0);
 
   useFrame((state) => {
-    if (meshRef.current) {
-      if (isActive) {
-        meshRef.current.scale.setScalar(1 + Math.sin(state.clock.elapsedTime * 3) * 0.02);
-      }
-      
-      if (pressed) {
-        setPressure(prev => Math.min(prev + 5, 100));
-        meshRef.current.position.z = -0.02;
-      } else {
-        setPressure(prev => Math.max(prev - 10, 0));
-        meshRef.current.position.z = 0;
-      }
+    if (!meshRef.current) return;
+    
+    // Only animate if state changes
+    if (isActive && state.clock.elapsedTime % 0.1 < 0.05) {
+      meshRef.current.scale.setScalar(1 + Math.sin(state.clock.elapsedTime * 3) * 0.02);
+    }
+    
+    // Smooth pressure animation with less frequent updates
+    if (pressed && pressure < 100) {
+      setPressure(prev => Math.min(prev + 10, 100));
+      meshRef.current.position.z = -0.02;
+    } else if (!pressed && pressure > 0) {
+      setPressure(prev => Math.max(prev - 20, 0));
+      meshRef.current.position.z = 0;
     }
   });
 
@@ -58,7 +61,7 @@ function TactileButton({
   return (
     <group position={position}>
       <mesh position={[0, 0, 0.01]}>
-        <ringGeometry args={[0.25, 0.28, 32]} />
+        <ringGeometry args={[0.25, 0.28, 16]} />
         <meshStandardMaterial 
           color="#2a2a2a"
           metalness={0.8}
@@ -76,7 +79,7 @@ function TactileButton({
         onPointerUp={() => setPressed(false)}
         castShadow
       >
-        <circleGeometry args={[0.25, 32]} />
+        <circleGeometry args={[0.25, 16]} />
         <meshStandardMaterial 
           color={pressed ? '#1a1a1a' : '#2d2d2d'}
           emissive={hovered ? glowColor : '#000000'}
@@ -97,7 +100,7 @@ function TactileButton({
       
       {pressed && (
         <mesh position={[0, 0, -0.01]} scale={[pressure / 100, pressure / 100, 1]}>
-          <ringGeometry args={[0.28, 0.32, 32]} />
+          <ringGeometry args={[0.28, 0.32, 16]} />
           <meshBasicMaterial color={glowColor} transparent opacity={0.3} />
         </mesh>
       )}
@@ -112,7 +115,8 @@ export default function SteeringWheel3DModel({
   activeButton,
   handPosition,
   onButtonPress,
-  onHandPositionChange 
+  onHandPositionChange,
+  onLoad
 }: SteeringWheel3DModelProps) {
   const groupRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF('/Normal Steering Wheel/scene.gltf');
@@ -154,11 +158,19 @@ export default function SteeringWheel3DModel({
           }
         }
       });
+      
+      // Call onLoad callback when model is ready
+      if (onLoad) {
+        onLoad();
+      }
     }
-  }, [scene, activeState]);
+  }, [scene, activeState, onLoad]);
 
   useFrame((state) => {
-    if (groupRef.current) {
+    if (!groupRef.current || activeState === 'inactive') return;
+    
+    // Only animate every few frames for performance
+    if (state.clock.elapsedTime % 0.05 < 0.025) {
       groupRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.01;
       groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.7) * 0.02;
     }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import SteeringWheel3D from './components/SteeringWheel3D';
 import StateSelector from './components/StateSelector';
 import CurrentStateView from './components/CurrentStateView';
@@ -20,13 +20,13 @@ const SteeringWheelConceptWithFeatures = () => {
   const [lastAction, setLastAction] = useState<string | null>(null);
   const [showHapticFeedback, setShowHapticFeedback] = useState(false);
   const [handPosition, setHandPosition] = useState({ left: false, right: false });
-  const [contextualButtons, setContextualButtons] = useState({
+  const contextualButtons = useMemo(() => ({
     'drive': ['Media', 'Phone', 'Voice', 'Cruise'],
     'cruise': ['Speed+', 'Speed-', 'Distance', 'Cancel'],
     'parking': ['Camera', 'Sensors', 'Park Assist', 'Emergency']
-  });
+  }), []);
 
-  const triggerHapticFeedback = (action: string | null, intensity: 'light' | 'medium' | 'strong' = 'medium') => {
+  const triggerHapticFeedback = useCallback((action: string | null, intensity: 'light' | 'medium' | 'strong' = 'medium') => {
     setLastAction(action);
     setShowHapticFeedback(true);
     
@@ -42,9 +42,9 @@ const SteeringWheelConceptWithFeatures = () => {
     setTimeout(() => {
       setShowHapticFeedback(false);
     }, 1500);
-  };
+  }, [isScreenReaderEnabled, playHapticSound, speakAction]);
 
-  const handleStateChange = (newState: string) => {
+  const handleStateChange = useCallback((newState: string) => {
     setActiveState(newState);
     
     if (newState === 'active') {
@@ -59,9 +59,9 @@ const SteeringWheelConceptWithFeatures = () => {
         speakAction('Steering controls deactivated');
       }
     }
-  };
+  }, [triggerHapticFeedback, playHapticSound, isScreenReaderEnabled, speakAction]);
 
-  const handlePressure = (pressure: number, button: string) => {
+  const handlePressure = useCallback((pressure: number, button: string) => {
     setPressureLevel(pressure);
     
     // Distinguish between accidental touch and intentional press
@@ -75,9 +75,9 @@ const SteeringWheelConceptWithFeatures = () => {
       setActiveButton(button);
       triggerHapticFeedback(`${button} pressed`, 'strong');
     }
-  };
+  }, [activeButton, triggerHapticFeedback]);
 
-  const handleModeChange = (newMode: 'drive' | 'cruise' | 'parking') => {
+  const handleModeChange = useCallback((newMode: 'drive' | 'cruise' | 'parking') => {
     setCurrentMode(newMode);
     triggerHapticFeedback(`${newMode} mode activated`, 'medium');
     
@@ -86,15 +86,15 @@ const SteeringWheelConceptWithFeatures = () => {
     if (isScreenReaderEnabled) {
       speakAction(`Available controls: ${buttons.join(', ')}`);
     }
-  };
+  }, [contextualButtons, isScreenReaderEnabled, speakAction, triggerHapticFeedback]);
 
-  const handleHandPosition = (left: boolean, right: boolean) => {
+  const handleHandPosition = useCallback((left: boolean, right: boolean) => {
     setHandPosition({ left, right });
     
     if (!left || !right) {
       triggerHapticFeedback('Safety alert: Keep both hands on wheel', 'strong');
     }
-  };
+  }, [triggerHapticFeedback]);
 
   return (
     <div className="max-w-7xl mx-auto p-6 md:p-8">

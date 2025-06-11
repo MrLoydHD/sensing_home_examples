@@ -18,6 +18,8 @@ interface SteeringWheel3DProps {
   contacts?: Array<{id: string, name: string, number: string}>;
   selectedContact?: string | null;
   onScroll?: (direction: 'up' | 'down') => void;
+  isInCall?: boolean;
+  callingContact?: string | null;
 }
 
 

@@ -24,7 +24,11 @@ const SteeringWheelConceptWithFeatures = () => {
   const [showContactsList, setShowContactsList] = useState(false);
   const [selectedContactIndex, setSelectedContactIndex] = useState(0);
   const [isInCall, setIsInCall] = useState(false);
+  const [callingContact, setCallingContact] = useState<string | null>(null);
   const [phoneClickCount, setPhoneClickCount] = useState(0);
+  const [showMediaDisplay, setShowMediaDisplay] = useState(false);
+  const [currentSongIndex, setCurrentSongIndex] = useState(0);
+  const [volume, setVolume] = useState(50);
   const contextualButtons = useMemo(() => ({
     'drive': ['Media', 'Phone', 'Voice', 'Cruise'],
     'cruise': ['Speed+', 'Speed-', 'Distance', 'Cancel'],
@@ -40,6 +44,15 @@ const SteeringWheelConceptWithFeatures = () => {
     { id: '6', name: 'Lisa Garcia', number: '+1-555-0987' },
     { id: '7', name: 'David Miller', number: '+1-555-0246' },
     { id: '8', name: 'Anna Taylor', number: '+1-555-0135' }
+  ], []);
+
+  const mediaLibrary = useMemo(() => [
+    { title: 'Bohemian Rhapsody', artist: 'Queen' },
+    { title: 'Hotel California', artist: 'Eagles' },
+    { title: 'Stairway to Heaven', artist: 'Led Zeppelin' },
+    { title: 'Imagine', artist: 'John Lennon' },
+    { title: 'Sweet Child O Mine', artist: 'Guns N Roses' },
+    { title: 'Billie Jean', artist: 'Michael Jackson' },
   ], []);
 
   const triggerHapticFeedback = useCallback((action: string | null, intensity: 'light' | 'medium' | 'strong' = 'medium') => {
@@ -77,30 +90,62 @@ const SteeringWheelConceptWithFeatures = () => {
     }
   }, [triggerHapticFeedback, playHapticSound, isScreenReaderEnabled, speakAction]);
 
+  const handlePhoneButtonPress = useCallback(() => {
+    if (showContactsList && !isInCall) {
+      // If contacts are showing and not in call, call the selected contact
+      const selectedContact = contacts[selectedContactIndex];
+      setCallingContact(selectedContact.name);
+      setShowContactsList(false);
+      setIsInCall(true);
+      triggerHapticFeedback(`Calling ${selectedContact.name}`, 'strong');
+      
+      // Show call for 5 seconds for demo
+      setTimeout(() => {
+        setIsInCall(false);
+        setCallingContact(null);
+        triggerHapticFeedback('Call ended', 'medium');
+      }, 5000);
+    } else if (!isInCall) {
+      // Show contacts list
+      setShowContactsList(true);
+      triggerHapticFeedback('Contacts list opened', 'medium');
+    }
+  }, [showContactsList, isInCall, contacts, selectedContactIndex, triggerHapticFeedback]);
+
+  const handleMediaButtonPress = useCallback(() => {
+    setShowMediaDisplay(prev => !prev);
+    setShowContactsList(false); // Hide contacts when showing media
+    triggerHapticFeedback(showMediaDisplay ? 'Media closed' : 'Media opened', 'medium');
+  }, [showMediaDisplay, triggerHapticFeedback]);
+
   const handlePressure = useCallback((pressure: number, button: string) => {
     setPressureLevel(pressure);
+    setActiveButton(button);
+    triggerHapticFeedback(`${button} pressed`, 'strong');
     
-    // Distinguish between accidental touch and intentional press
-    if (pressure < 30) {
-      // Light touch - show guidance
-      if (!activeButton) {
-        triggerHapticFeedback(`${button} detected`, 'light');
-      }
-    } else if (pressure > 60) {
-      // Intentional press
-      setActiveButton(button);
-      triggerHapticFeedback(`${button} pressed`, 'strong');
-      
-      // Handle phone button special functionality
-      if (button === 'Phone') {
-        handlePhoneButtonPress();
-      }
+    // Handle button functionality for demo
+    if (button === 'Phone') {
+      handlePhoneButtonPress();
+    } else if (button === 'Media') {
+      handleMediaButtonPress();
+    } else if (button === 'Cruise') {
+      // Hide all displays when entering cruise mode
+      setShowContactsList(false);
+      setShowMediaDisplay(false);
+      setPhoneClickCount(0);
     }
-  }, [activeButton, triggerHapticFeedback]);
+  }, [triggerHapticFeedback, handlePhoneButtonPress, handleMediaButtonPress]);
 
   const handleModeChange = useCallback((newMode: 'drive' | 'cruise' | 'parking') => {
     setCurrentMode(newMode);
     triggerHapticFeedback(`${newMode} mode activated`, 'medium');
+    
+    // Hide all displays when changing modes
+    if (newMode !== 'drive') {
+      setShowContactsList(false);
+      setShowMediaDisplay(false);
+      setPhoneClickCount(0);
+    }
     
     // Update contextual buttons based on mode
     const buttons = contextualButtons[newMode];
@@ -117,38 +162,28 @@ const SteeringWheelConceptWithFeatures = () => {
     }
   }, [triggerHapticFeedback]);
 
-  const handlePhoneButtonPress = useCallback(() => {
-    setPhoneClickCount(prev => {
-      const newCount = prev + 1;
+  const handleMediaScroll = useCallback((direction: 'up' | 'down') => {
+    setVolume(prev => {
+      const newVolume = direction === 'up' 
+        ? Math.min(100, prev + 5)
+        : Math.max(0, prev - 5);
       
-      if (newCount === 1) {
-        // First click - show contacts list
-        setShowContactsList(true);
-        triggerHapticFeedback('Contacts list opened', 'medium');
-        
-        // Reset click count after 2 seconds if no second click
-        setTimeout(() => {
-          setPhoneClickCount(0);
-        }, 2000);
-      } else if (newCount === 2) {
-        // Second click - call selected contact
-        const selectedContact = contacts[selectedContactIndex];
-        setIsInCall(true);
-        setShowContactsList(false);
-        triggerHapticFeedback(`Calling ${selectedContact.name}`, 'strong');
-        
-        // Simulate call duration
-        setTimeout(() => {
-          setIsInCall(false);
-          triggerHapticFeedback('Call ended', 'medium');
-        }, 10000);
-        
-        setPhoneClickCount(0);
-      }
-      
-      return newCount;
+      triggerHapticFeedback(`Volume ${newVolume}%`, 'light');
+      return newVolume;
     });
-  }, [contacts, selectedContactIndex, triggerHapticFeedback]);
+  }, [triggerHapticFeedback]);
+
+  const handleNextSong = useCallback(() => {
+    setCurrentSongIndex(prev => (prev + 1) % mediaLibrary.length);
+    const nextSong = mediaLibrary[(currentSongIndex + 1) % mediaLibrary.length];
+    triggerHapticFeedback(`Next: ${nextSong.title}`, 'medium');
+  }, [mediaLibrary, currentSongIndex, triggerHapticFeedback]);
+
+  const handlePrevSong = useCallback(() => {
+    setCurrentSongIndex(prev => prev === 0 ? mediaLibrary.length - 1 : prev - 1);
+    const prevSong = mediaLibrary[currentSongIndex === 0 ? mediaLibrary.length - 1 : currentSongIndex - 1];
+    triggerHapticFeedback(`Previous: ${prevSong.title}`, 'medium');
+  }, [mediaLibrary, currentSongIndex, triggerHapticFeedback]);
 
   const handleContactScroll = useCallback((direction: 'up' | 'down') => {
     setSelectedContactIndex(prev => {
@@ -216,10 +251,18 @@ const SteeringWheelConceptWithFeatures = () => {
               onButtonPress={handlePressure}
               onHandPositionChange={handleHandPosition}
               speed={Math.round(speed)}
-              showContactsList={showContactsList}
+              showContactsList={showContactsList && !isInCall}
               contacts={contacts}
               selectedContact={contacts[selectedContactIndex]?.id}
-              onScroll={handleContactScroll}
+              onScroll={showMediaDisplay ? handleMediaScroll : handleContactScroll}
+              isInCall={isInCall}
+              callingContact={callingContact}
+              showMediaDisplay={showMediaDisplay && !isInCall}
+              currentSong={mediaLibrary[currentSongIndex]?.title}
+              artist={mediaLibrary[currentSongIndex]?.artist}
+              volume={volume}
+              onNextSong={handleNextSong}
+              onPrevSong={handlePrevSong}
             />
           </div>
         </div>

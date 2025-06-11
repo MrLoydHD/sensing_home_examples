@@ -1,12 +1,23 @@
 import { Outlet, useLocation, Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Github } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const BaseLayout = () => {
   // Get current location to check if we're on an example page
   const location = useLocation();
   const isExamplePage = location.pathname.includes('/examples/');
   
-  // If on example page, extract the example name for the header
+  // Smooth scroll function
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const element = document.querySelector(targetId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   return (
     <div className='max-w-7xl mx-auto px-4 font-sans'>
@@ -24,36 +35,85 @@ const BaseLayout = () => {
         {/* Conditional navigation: show nav links on landing page, back button on example pages */}
         {isExamplePage ? (
           <div className="flex items-center">
-            <Link 
-              to="/" 
-              className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
-            >
-              <ArrowLeft className="mr-2" size={20} />
-              <span className="font-medium">Back to Examples</span>
-            </Link>
+            <Button variant="ghost" asChild>
+              <Link to="/" className="gap-2">
+                <ArrowLeft size={20} />
+                Back to Examples
+              </Link>
+            </Button>
           </div>
         ) : (
-          <nav className="flex gap-5">
-            <a href="#examples" className="text-gray-800 text-sm font-medium hover:text-blue-600 transition-colors">Examples</a>
-            <a href="#about" className="text-gray-800 text-sm font-medium hover:text-blue-600 transition-colors">About</a>
-            <a href="#paper" className="text-gray-800 text-sm font-medium hover:text-blue-600 transition-colors">Research Paper</a>
-            <a href="#" className="text-gray-800 text-sm font-medium hover:text-blue-600 transition-colors flex items-center gap-1">
-              GitHub
-            </a>
+          <nav className="flex-1 flex items-center justify-between ml-12">
+            {/* Centered scroll navigation */}
+            <div className="flex-1 flex justify-center gap-2">
+              <Button variant="ghost" size="sm" asChild>
+                <a 
+                  href="#examples"
+                  onClick={(e) => handleSmoothScroll(e, '#examples')}
+                >
+                  Examples
+                </a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a 
+                  href="#features"
+                  onClick={(e) => handleSmoothScroll(e, '#features')}
+                >
+                  Features
+                </a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a 
+                  href="#about"
+                  onClick={(e) => handleSmoothScroll(e, '#about')}
+                >
+                  About
+                </a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a 
+                  href="#paper"
+                  onClick={(e) => handleSmoothScroll(e, '#paper')}
+                >
+                  Research
+                </a>
+              </Button>
+            </div>
+            
+            {/* Right-aligned external links */}
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/user-guidance">User Guide</Link>
+              </Button>
+              <Button variant="default" size="sm" asChild>
+                <Link to={"https://github.com/MrLoydHD/sensing_home_examples"} className="gap-1">
+                  <Github size={16} />
+                  GitHub
+                </Link>
+              </Button>
+            </div>
           </nav>
         )}
       </header>
       
       {/* Main Content */}
-      <Outlet />
+      <main className="min-h-[calc(100vh-200px)]">
+        <Outlet />
+      </main>
       
       {/* Footer */}
-      <footer className="border-t border-gray-200 py-8 flex justify-between items-center text-sm text-gray-600 mt-16">
+      <footer className="border-t border-gray-200 py-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600 mt-16 gap-4">
         <div>© 2025 SensingHome Project. All rights reserved.</div>
-        <div className="flex gap-6">
-          <a href="#" className="text-gray-600 hover:text-gray-900">Privacy Policy</a>
-          <a href="#" className="text-gray-600 hover:text-gray-900">Terms of Service</a>
-          <a href="#" className="text-gray-600 hover:text-gray-900">Contact</a>
+        <div className="flex gap-2">
+          <Button variant="link" size="sm" asChild>
+            <a href="#">Privacy Policy</a>
+          </Button>
+          <Button variant="link" size="sm" asChild>
+            <a href="#">Terms of Service</a>
+          </Button>
+          <Button variant="link" size="sm" asChild>
+            <a href="#">Contact</a>
+          </Button>
         </div>
       </footer>
     </div>

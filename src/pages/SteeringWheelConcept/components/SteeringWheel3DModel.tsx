@@ -2,6 +2,32 @@ import { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text, RoundedBox, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
+import SpeedDisplay from './displays/SpeedDisplay';
+import MediaDisplay from './displays/MediaDisplay';
+import ContactsDisplay from './displays/ContactsDisplay';
+import CallingDisplay from './displays/CallingDisplay';
+
+// Button configurations with icons
+const buttonConfigs = {
+  drive: [
+    { position: [-1.2, 0.4, 0.5], label: 'Media', icon: '🎵' },
+    { position: [1.2, 0.4, 0.5], label: 'Phone', icon: '📞' },
+    { position: [-1.2, -0.4, 0.5], label: 'Voice', icon: '🎤' },
+    { position: [1.2, -0.4, 0.5], label: 'Cruise', icon: '🚗' },
+  ],
+  cruise: [
+    { position: [-1.2, 0.4, 0.5], label: 'Speed+', icon: '⬆️' },
+    { position: [1.2, 0.4, 0.5], label: 'Speed-', icon: '⬇️' },
+    { position: [-1.2, -0.4, 0.5], label: 'Distance', icon: '📏' },
+    { position: [1.2, -0.4, 0.5], label: 'Cancel', icon: '❌' },
+  ],
+  parking: [
+    { position: [-1.2, 0.4, 0.5], label: 'Camera', icon: '📷' },
+    { position: [1.2, 0.4, 0.5], label: 'Sensors', icon: '📡' },
+    { position: [-1.2, -0.4, 0.5], label: 'Park Assist', icon: '🅿️' },
+    { position: [1.2, -0.4, 0.5], label: 'Emergency', icon: '🚨' },
+  ],
+};
 
 interface SteeringWheel3DModelProps {
   activeState: string;
@@ -17,6 +43,14 @@ interface SteeringWheel3DModelProps {
   selectedContact?: string | null;
   onContactSelect?: (contactId: string) => void;
   onScroll?: (direction: 'up' | 'down') => void;
+  isInCall?: boolean;
+  callingContact?: string | null;
+  showMediaDisplay?: boolean;
+  currentSong?: string;
+  artist?: string;
+  volume?: number;
+  onNextSong?: () => void;
+  onPrevSong?: () => void;
 }
 
 // Tactile button component
@@ -38,7 +72,7 @@ function TactileButton({
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
-  const [pressure, setPressure] = useState(0);
+  const [pressure] = useState(0);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -47,22 +81,12 @@ function TactileButton({
     if (isActive && state.clock.elapsedTime % 0.1 < 0.05) {
       meshRef.current.scale.setScalar(1 + Math.sin(state.clock.elapsedTime * 3) * 0.02);
     }
-    
-    // Smooth pressure animation with less frequent updates
-    if (pressed && pressure < 100) {
-      setPressure(prev => Math.min(prev + 10, 100));
-      meshRef.current.position.z = -0.02;
-    } else if (!pressed && pressure > 0) {
-      setPressure(prev => Math.max(prev - 20, 0));
-      meshRef.current.position.z = 0;
-    }
   });
 
-  useEffect(() => {
-    if (pressure > 0) {
-      onPress(pressure, label);
-    }
-  }, [pressure, label, onPress]);
+  // Simplified for demo - trigger on click
+  const handleClick = () => {
+    onPress(100, label); // Always send full pressure for demo
+  };
 
   return (
     <group position={position}>
@@ -83,6 +107,7 @@ function TactileButton({
         onPointerOut={() => setHovered(false)}
         onPointerDown={() => setPressed(true)}
         onPointerUp={() => setPressed(false)}
+        onClick={handleClick}
         castShadow
       >
         <circleGeometry args={[0.25, 16]} />
@@ -95,16 +120,15 @@ function TactileButton({
         />
       </mesh>
       
-      {/* Button label text */}
+      {/* Button icon */}
       <Text
         position={[0, 0, 0.03]}
-        fontSize={0.08}
+        fontSize={0.15}
         color={isActive ? '#ffffff' : '#cccccc'}
         anchorX="center"
         anchorY="middle"
-        maxWidth={0.4}
       >
-        {label}
+        {buttonConfigs[mode]?.find((btn: { label: string; }) => btn.label === label)?.icon || label}
       </Text>
       
       {pressed && (
@@ -130,35 +154,22 @@ export default function SteeringWheel3DModel({
   showContactsList = false,
   contacts = [],
   selectedContact = null,
-  onContactSelect,
-  onScroll
+  onScroll,
+  isInCall = false,
+  callingContact = null,
+  showMediaDisplay = false,
+  currentSong = '',
+  artist = '',
+  volume = 50,
+  onNextSong,
+  onPrevSong
 }: SteeringWheel3DModelProps) {
   const groupRef = useRef<THREE.Group>(null);
   const backWheelRef = useRef<THREE.Mesh>(null);
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null);
   const { scene } = useGLTF('/Normal Steering Wheel/scene.gltf');
   
-  // Button configurations - adjusted for larger model
-  const buttonConfigs = {
-    drive: [
-      { position: [-1.2, 0.4, 0.5], label: 'Media' },
-      { position: [1.2, 0.4, 0.5], label: 'Phone' },
-      { position: [-1.2, -0.4, 0.5], label: 'Voice' },
-      { position: [1.2, -0.4, 0.5], label: 'Cruise' },
-    ],
-    cruise: [
-      { position: [-1.2, 0.4, 0.5], label: 'Speed+' },
-      { position: [1.2, 0.4, 0.5], label: 'Speed-' },
-      { position: [-1.2, -0.4, 0.5], label: 'Distance' },
-      { position: [1.2, -0.4, 0.5], label: 'Cancel' },
-    ],
-    parking: [
-      { position: [-1.2, 0.4, 0.5], label: 'Camera' },
-      { position: [1.2, 0.4, 0.5], label: 'Sensors' },
-      { position: [-1.2, -0.4, 0.5], label: 'Park Assist' },
-      { position: [1.2, -0.4, 0.5], label: 'Emergency' },
-    ],
-  };
+  // Button configurations are now defined at module level
 
   // Apply materials and shadows to the loaded model
   useEffect(() => {
@@ -234,7 +245,7 @@ export default function SteeringWheel3DModel({
       </group>
 
       {/* Main Display - Behind the wheel */}
-      <group position={[0, 1.2, -0.8]} rotation={[0, 0, 0]}>
+      <group position={[0, 1.2, -2]} rotation={[0, 0, 0]}>
         <RoundedBox args={[2.5, 1.8, 0.05]} radius={0.1} smoothness={4}>
           <meshStandardMaterial 
             color="#000000"
@@ -245,82 +256,23 @@ export default function SteeringWheel3DModel({
           />
         </RoundedBox>
         
-        {showContactsList ? (
-          // Contacts view with speed in corner
-          <>
-            {/* Contacts header - left side */}
-            <Text
-              position={[-0.6, 0.6, 0.03]}
-              fontSize={0.15}
-              color="#ffffff"
-              anchorX="center"
-              anchorY="middle"
-            >
-              📞 CONTACTS
-            </Text>
-            
-            {/* Speed - right side */}
-            <group position={[0.6, 0.6, 0.03]}>
-              <Text
-                fontSize={0.15}
-                color="#00ff00"
-                anchorX="center"
-                anchorY="middle"
-              >
-                {speed} km/h
-              </Text>
-            </group>
-            
-            {/* Contact list */}
-            {contacts.slice(0, 4).map((contact, index) => (
-              <group key={contact.id} position={[0, 0.2 - index * 0.25, 0.03]}>
-                <Text
-                  fontSize={0.12}
-                  color={selectedContact === contact.id ? '#00ff00' : '#ffffff'}
-                  anchorX="center"
-                  anchorY="middle"
-                  maxWidth={2.2}
-                >
-                  {contact.name}
-                </Text>
-                {selectedContact === contact.id && (
-                  <mesh position={[0, 0, -0.01]}>
-                    <RoundedBox args={[2.2, 0.2, 0.01]} radius={0.02} smoothness={4}>
-                      <meshStandardMaterial 
-                        color="#00ff00"
-                        transparent
-                        opacity={0.3}
-                        emissive="#00ff00"
-                        emissiveIntensity={0.2}
-                      />
-                    </RoundedBox>
-                  </mesh>
-                )}
-              </group>
-            ))}
-          </>
+        {isInCall ? (
+          <CallingDisplay speed={speed} callingContact={callingContact} />
+        ) : showContactsList ? (
+          <ContactsDisplay 
+            speed={speed} 
+            contacts={contacts} 
+            selectedContact={selectedContact} 
+          />
+        ) : showMediaDisplay ? (
+          <MediaDisplay 
+            speed={speed} 
+            currentSong={currentSong} 
+            artist={artist} 
+            volume={volume} 
+          />
         ) : (
-          // Speed-only view
-          <>
-            <Text
-              position={[0, 0.2, 0.03]}
-              fontSize={0.4}
-              color="#00ff00"
-              anchorX="center"
-              anchorY="middle"
-            >
-              {speed}
-            </Text>
-            <Text
-              position={[0, -0.2, 0.03]}
-              fontSize={0.12}
-              color="#00ff00"
-              anchorX="center"
-              anchorY="middle"
-            >
-              km/h
-            </Text>
-          </>
+          <SpeedDisplay speed={speed} />
         )}
       </group>
 
@@ -329,7 +281,7 @@ export default function SteeringWheel3DModel({
         ref={backWheelRef}
         position={[0, 0, -0.2]}
         onWheel={(e) => {
-          if (showContactsList && onScroll) {
+          if ((showContactsList || showMediaDisplay) && onScroll) {
             // Reduced sensitivity by requiring larger delta
             if (Math.abs(e.deltaY) > 5) {
               const direction = e.deltaY > 0 ? 'down' : 'up';
@@ -340,10 +292,10 @@ export default function SteeringWheel3DModel({
           }
         }}
         onPointerMove={(e) => {
-          if (showContactsList && Math.abs(e.movementY) > 3) {
+          if ((showContactsList || showMediaDisplay) && onScroll && Math.abs(e.movementY) > 3) {
             const direction = e.movementY > 0 ? 'down' : 'up';
             setScrollDirection(direction);
-            onScroll?.(direction);
+            onScroll(direction);
             setTimeout(() => setScrollDirection(null), 200);
           }
         }}
@@ -352,11 +304,80 @@ export default function SteeringWheel3DModel({
         <meshStandardMaterial 
           color={scrollDirection ? '#1e40af' : '#0a0a0a'}
           transparent
-          opacity={showContactsList ? 0.15 : 0.05}
+          opacity={(showContactsList || showMediaDisplay) ? 0.15 : 0.05}
           emissive={scrollDirection ? '#1e40af' : '#000000'}
           emissiveIntensity={scrollDirection ? 0.3 : 0}
         />
       </mesh>
+
+      {/* Hand grip areas - music controls when in media mode */}
+      <group>
+        <mesh 
+          position={[-2.0, 1, 0.5]}
+          onPointerEnter={() => handleGripHover(true, true)}
+          onPointerLeave={() => handleGripHover(true, false)}
+          onClick={() => {
+            if (showMediaDisplay && onPrevSong) {
+              onPrevSong();
+            }
+          }}
+        >
+          <RoundedBox args={[0.6, 0.6, 0.15]} radius={0.05} smoothness={4}>
+            <meshStandardMaterial 
+              color={showMediaDisplay ? '#3b82f6' : (handPosition.left ? '#059669' : '#1a1a1a')}
+              transparent
+              opacity={0.6}
+              emissive={showMediaDisplay ? '#3b82f6' : (handPosition.left ? '#059669' : '#000000')}
+              emissiveIntensity={showMediaDisplay ? 0.3 : (handPosition.left ? 0.3 : 0)}
+            />
+          </RoundedBox>
+          {/* Previous song icon when in media mode */}
+          {showMediaDisplay && (
+            <Text
+              position={[0, 0, 0.08]}
+              fontSize={0.20}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+            >
+              ⏮️
+            </Text>
+          )}
+        </mesh>
+
+        <mesh 
+          position={[2.0, 1, 0.5]}
+          onPointerEnter={() => handleGripHover(false, true)}
+          onPointerLeave={() => handleGripHover(false, false)}
+          onClick={() => {
+            if (showMediaDisplay && onNextSong) {
+              onNextSong();
+            }
+          }}
+        >
+          <RoundedBox args={[0.6, 0.6, 0.15]} radius={0.05} smoothness={4}>
+            <meshStandardMaterial 
+              color={showMediaDisplay ? '#3b82f6' : (handPosition.right ? '#059669' : '#1a1a1a')}
+              transparent
+              opacity={0.6}
+              emissive={showMediaDisplay ? '#3b82f6' : (handPosition.right ? '#059669' : '#000000')}
+              emissiveIntensity={showMediaDisplay ? 0.3 : (handPosition.right ? 0.3 : 0)}
+            />
+          </RoundedBox>
+          {/* Next song icon when in media mode */}
+          {showMediaDisplay && (
+            <Text
+              position={[0, 0, 0.08]}
+              fontSize={0.20}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+            >
+              ⏭️
+            </Text>
+          )}
+        </mesh>
+      </group>
 
       {/* Contextual buttons */}
       {activeState !== 'inactive' && (
@@ -387,6 +408,7 @@ export default function SteeringWheel3DModel({
           ⚠️ Keep both hands on wheel
         </Text>
       )}
+
     </group>
   );
 }

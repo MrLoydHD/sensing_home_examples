@@ -57,20 +57,20 @@ interface StateCardProps {
 
 const StateCard = ({ state, isActive, onClick, renderContent }: StateCardProps) => (
   <div 
-    className={`w-full sm:w-[280px] lg:w-[300px] bg-white rounded-xl p-5 shadow-sm mb-5 cursor-pointer transition-all border-2 ${
-      isActive ? 'border-blue-500' : 'border-transparent'
+    className={`w-full sm:w-[280px] lg:w-[300px] bg-card rounded-xl p-5 shadow-sm mb-5 cursor-pointer transition-all border-2 ${
+      isActive ? 'border-primary' : 'border-transparent'
     }`}
     onClick={onClick}
   >
-    <h3 className="text-blue-600 mb-3 flex items-center gap-2">
-      <div className={`w-2.5 h-2.5 rounded-full ${isActive ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
+    <h3 className="text-primary mb-3 flex items-center gap-2">
+      <div className={`w-2.5 h-2.5 rounded-full ${isActive ? 'bg-primary' : 'bg-muted'}`}></div>
       {state.title}
     </h3>
     <div className="h-48 relative">
       {renderContent()}
     </div>
-    <p className="text-start font-bold mt-4 text-gray-800">{state.description}</p>
-    <p className="text-sm text-start mt-1 text-gray-600">
+    <p className="text-start font-bold mt-4 text-card-foreground">{state.description}</p>
+    <p className="text-sm text-start mt-1 text-muted-foreground">
       {state.info.split('\n').map((line, index) => (
         <Fragment key={index}>
           {line}

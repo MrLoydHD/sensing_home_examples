@@ -22,35 +22,31 @@ const ExamplesGrid = () => {
             threshold={0.1}
             rootMargin={`${index * 20}px`}
           >
-            <Card 
-              className={`h-full overflow-hidden transition-all duration-300 cursor-pointer ${
-                hoveredExample === example.id ? 'shadow-lg border-blue-300' : ''
-              }`}
-              onMouseEnter={() => setHoveredExample(example.id)}
-              onMouseLeave={() => setHoveredExample(null)}
-            >
-              <div className="h-48 bg-gradient-to-br from-blue-50 to-blue-100 flex justify-center items-center">
-                <div className="w-16 h-16 bg-white rounded-xl flex justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-110">
-                  {example.icon}
+            <Link to={example.link} className="block h-full">
+              <Card 
+                className={`h-full overflow-hidden transition-all duration-300 cursor-pointer p-0 ${
+                  hoveredExample === example.id ? 'shadow-lg border-primary/30' : ''
+                }`}
+                onMouseEnter={() => setHoveredExample(example.id)}
+                onMouseLeave={() => setHoveredExample(null)}
+              >
+                <div className="h-48 bg-gradient-to-br from-primary/10 to-primary/20 flex justify-center items-center">
+                  <div className="w-16 h-16 bg-background rounded-xl flex justify-center items-center shadow-md transform transition-transform duration-300 hover:scale-110">
+                    {example.icon}
+                  </div>
                 </div>
-              </div>
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {example.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="mb-4">
-                  {example.description}
-                </CardDescription>
-                <Button variant="link" asChild className="p-0 h-auto">
-                  <Link to={example.link} className="inline-flex items-center gap-1">
-                    View Example
-                    <ArrowRight size={14} />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">
+                    {example.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pb-6">
+                  <CardDescription className="mb-4 text-justify line-clamp-3">
+                    {example.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
           </LazyLoad>
         ))}
       </div>

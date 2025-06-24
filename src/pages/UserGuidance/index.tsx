@@ -142,10 +142,10 @@ const UserGuidance = () => {
           <Badge variant="secondary" className="mb-4">
             Interaction Guide
           </Badge>
-          <h1 className="text-4xl font-bold text-gray-900">
+          <h1 className="text-4xl font-bold text-foreground">
             User Interaction Patterns
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Learn how to interact with seamless touch panels through various input methods and feedback mechanisms
           </p>
         </div>
@@ -153,7 +153,7 @@ const UserGuidance = () => {
 
       {/* Quick Overview */}
       <LazyLoad>
-        <Alert className="bg-blue-50 border-blue-200">
+        <Alert className="bg-accent border-border">
           <Info className="h-4 w-4" />
           <AlertDescription>
             Seamless panels use multiple interaction methods simultaneously to provide intuitive and accessible controls.
@@ -168,8 +168,8 @@ const UserGuidance = () => {
           {interactionPatterns.map((pattern) => (
             <Card key={pattern.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <div className={`w-12 h-12 bg-${pattern.color}-100 rounded-lg flex items-center justify-center mb-4`}>
-                  <div className={`text-${pattern.color}-600`}>
+                <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center mb-4">
+                  <div className="text-primary">
                     {pattern.icon}
                   </div>
                 </div>
@@ -179,7 +179,7 @@ const UserGuidance = () => {
               <CardContent>
                 <ul className="space-y-2">
                   {pattern.examples.map((example, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
+                    <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <ArrowRight className="w-3 h-3 mt-1 flex-shrink-0" />
                       <span>{example}</span>
                     </li>
@@ -210,26 +210,26 @@ const UserGuidance = () => {
               </TabsList>
 
               <TabsContent value="hover" className="space-y-4">
-                <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
+                <div className="text-center p-8 border-2 border-dashed border-border rounded-lg">
                   <div 
                     className={`inline-block p-8 rounded-lg transition-all duration-300 ${
-                      hoverDemo ? 'bg-blue-100 scale-110 shadow-lg' : 'bg-gray-100'
+                      hoverDemo ? 'bg-accent scale-110 shadow-lg' : 'bg-muted'
                     }`}
                     onMouseEnter={() => setHoverDemo(true)}
                     onMouseLeave={() => setHoverDemo(false)}
                   >
                     <MousePointer className={`w-12 h-12 transition-colors ${
-                      hoverDemo ? 'text-blue-600' : 'text-gray-400'
+                      hoverDemo ? 'text-primary' : 'text-muted-foreground'
                     }`} />
                   </div>
-                  <p className="mt-4 text-sm text-gray-600">
+                  <p className="mt-4 text-sm text-muted-foreground">
                     {hoverDemo ? 'Controls are now visible!' : 'Hover over the icon to reveal controls'}
                   </p>
                 </div>
               </TabsContent>
 
               <TabsContent value="tap" className="space-y-4">
-                <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
+                <div className="text-center p-8 border-2 border-dashed border-border rounded-lg">
                   <Button
                     size="lg"
                     variant={tapCount >= 2 ? 'default' : 'outline'}
@@ -241,14 +241,14 @@ const UserGuidance = () => {
                     {tapCount === 1 && 'Tap again to confirm'}
                     {tapCount >= 2 && 'Action confirmed!'}
                   </Button>
-                  <p className="mt-4 text-sm text-gray-600">
+                  <p className="mt-4 text-sm text-muted-foreground">
                     Double-tap pattern prevents accidental activation
                   </p>
                 </div>
               </TabsContent>
 
               <TabsContent value="pressure" className="space-y-4">
-                <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
+                <div className="text-center p-8 border-2 border-dashed border-border rounded-lg">
                   <Button
                     size="lg"
                     variant="outline"
@@ -258,7 +258,7 @@ const UserGuidance = () => {
                     }`}
                     style={{
                       backgroundColor: pressureLevel > 0 
-                        ? `rgba(59, 130, 246, ${pressureLevel / 3})` 
+                        ? `hsl(var(--primary) / ${pressureLevel / 3})` 
                         : undefined
                     }}
                   >
@@ -266,13 +266,13 @@ const UserGuidance = () => {
                     Hold to apply pressure
                   </Button>
                   <div className="mt-4 space-y-2">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div 
-                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        className="bg-primary h-2 rounded-full transition-all"
                         style={{ width: `${(pressureLevel / 3) * 100}%` }}
                       />
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {pressureLevel === 0 && 'Press and hold to see pressure levels'}
                       {pressureLevel > 0 && pressureLevel < 1 && 'Light pressure - Preview mode'}
                       {pressureLevel >= 1 && pressureLevel < 2 && 'Normal pressure - Selection'}
@@ -283,26 +283,26 @@ const UserGuidance = () => {
               </TabsContent>
 
               <TabsContent value="gesture" className="space-y-4">
-                <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
-                  <div className="inline-block p-8 bg-gray-100 rounded-lg">
-                    <Sparkles className="w-12 h-12 text-gray-400" />
+                <div className="text-center p-8 border-2 border-dashed border-border rounded-lg">
+                  <div className="inline-block p-8 bg-muted rounded-lg">
+                    <Sparkles className="w-12 h-12 text-muted-foreground" />
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-4 max-w-md mx-auto">
                     <div className="text-left space-y-2">
                       <Badge variant="secondary">Swipe Up/Down</Badge>
-                      <p className="text-sm text-gray-600">Scroll through content</p>
+                      <p className="text-sm text-muted-foreground">Scroll through content</p>
                     </div>
                     <div className="text-left space-y-2">
                       <Badge variant="secondary">Circular Motion</Badge>
-                      <p className="text-sm text-gray-600">Adjust volume or values</p>
+                      <p className="text-sm text-muted-foreground">Adjust volume or values</p>
                     </div>
                     <div className="text-left space-y-2">
                       <Badge variant="secondary">Two-Finger Pinch</Badge>
-                      <p className="text-sm text-gray-600">Zoom in/out</p>
+                      <p className="text-sm text-muted-foreground">Zoom in/out</p>
                     </div>
                     <div className="text-left space-y-2">
                       <Badge variant="secondary">Long Press</Badge>
-                      <p className="text-sm text-gray-600">Access more options</p>
+                      <p className="text-sm text-muted-foreground">Access more options</p>
                     </div>
                   </div>
                 </div>
@@ -324,8 +324,8 @@ const UserGuidance = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <h3 className="font-semibold text-gray-800">Feedback & Confirmation</h3>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <h3 className="font-semibold text-foreground">Feedback & Confirmation</h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Badge variant="outline" className="mt-0.5">1</Badge>
                     <span>Always provide immediate feedback (visual, haptic, or audio)</span>
@@ -341,8 +341,8 @@ const UserGuidance = () => {
                 </ul>
               </div>
               <div className="space-y-4">
-                <h3 className="font-semibold text-gray-800">Gesture Design</h3>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <h3 className="font-semibold text-foreground">Gesture Design</h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Badge variant="outline" className="mt-0.5">1</Badge>
                     <span>Keep gestures simple and intuitive</span>
@@ -364,11 +364,11 @@ const UserGuidance = () => {
 
       {/* Special Features */}
       <LazyLoad>
-        <Card className="border-2 border-yellow-400 bg-yellow-50">
+        <Card className="border-2 border-primary bg-accent">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-yellow-600" />
+              <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <CardTitle>Featured: Steering Wheel Back Scroll</CardTitle>
@@ -379,8 +379,8 @@ const UserGuidance = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <h4 className="font-semibold text-gray-800">How it works:</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <h4 className="font-semibold text-foreground">How it works:</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Badge variant="outline" className="mt-0.5">1</Badge>
                     <span>Tactile bumps on the back of the steering wheel detect finger position</span>
@@ -396,18 +396,18 @@ const UserGuidance = () => {
                 </ul>
               </div>
               <div className="space-y-3">
-                <h4 className="font-semibold text-gray-800">Benefits:</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <h4 className="font-semibold text-foreground">Benefits:</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
-                    <ArrowRight className="w-3 h-3 mt-1 text-yellow-600" />
+                    <ArrowRight className="w-3 h-3 mt-1 text-primary" />
                     <span>Keeps driver's hands in safe position</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <ArrowRight className="w-3 h-3 mt-1 text-yellow-600" />
+                    <ArrowRight className="w-3 h-3 mt-1 text-primary" />
                     <span>Natural finger movement for scrolling</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <ArrowRight className="w-3 h-3 mt-1 text-yellow-600" />
+                    <ArrowRight className="w-3 h-3 mt-1 text-primary" />
                     <span>No visual distraction required</span>
                   </li>
                 </ul>
@@ -422,7 +422,7 @@ const UserGuidance = () => {
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold">Implementation Examples</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="border-l-4 border-blue-500">
+            <Card className="border-l-4 border-primary">
               <CardHeader>
                 <CardTitle className="text-lg">Sofa Arm Implementation</CardTitle>
               </CardHeader>
@@ -442,7 +442,7 @@ const UserGuidance = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-green-500">
+            <Card className="border-l-4 border-accent">
               <CardHeader>
                 <CardTitle className="text-lg">Steering Wheel Implementation</CardTitle>
               </CardHeader>

@@ -22,10 +22,10 @@ const BaseLayout = () => {
   return (
     <div className='max-w-7xl mx-auto px-4 font-sans'>
       {/* Header */}
-      <header className="flex justify-between items-center py-5 border-b border-gray-200">
-        <div className="flex items-center gap-3 text-2xl font-bold text-blue-600">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex justify-center items-center">
-            <div className="w-4 h-4 bg-white rounded"></div>
+      <header className="flex justify-between items-center py-5 border-b">
+        <div className="flex items-center gap-3 text-2xl font-bold text-primary">
+          <div className="w-8 h-8 bg-primary rounded-lg flex justify-center items-center">
+            <div className="w-4 h-4 bg-primary-foreground rounded"></div>
           </div>
           <Link to="/" className="hover:opacity-90 transition-opacity">
             SensingHome
@@ -102,7 +102,7 @@ const BaseLayout = () => {
       </main>
       
       {/* Footer */}
-      <footer className="border-t border-gray-200 py-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600 mt-16 gap-4">
+      <footer className="border-t py-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground mt-16 gap-4">
         <div>© 2025 SensingHome Project. All rights reserved.</div>
         <div className="flex gap-2">
           <Button variant="link" size="sm" asChild>

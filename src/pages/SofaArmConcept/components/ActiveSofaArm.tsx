@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import HoverAnnounceWrapper from '@/wrappers/HoverAnnounceWrapper';
+import { Zap, Lightbulb, Thermometer } from 'lucide-react';
 
 type ActiveSofaArmProps = {
   isPlaying: boolean;
@@ -95,7 +96,7 @@ const ActiveSofaArm = ({
           transition={{ duration: 0.2, ease: 'easeOut' }}
           className="absolute bottom-0 left-1/2 bg-black/70 text-white py-1.5 px-3 rounded-full text-xs flex items-center gap-1"
         >
-          <span className="text-xs">⚡</span>
+          <Zap className="w-3 h-3" />
           {lastAction}
         </motion.div>
       )}
@@ -135,7 +136,7 @@ const MediaDisplay = ({ currentMedia, currentVolume, size }: MediaDisplayProps) 
       {/* Volume indicator */}
       <div className="w-4/5 h-[3px] bg-white/20 rounded-sm mt-2 relative">
         <div 
-          className="absolute left-0 top-0 h-full rounded-sm bg-blue-500"
+          className="absolute left-0 top-0 h-full rounded-sm bg-primary"
           style={{ width: `${currentVolume}%` }}
         ></div>
       </div>
@@ -271,7 +272,7 @@ const SmartHomeControls = ({
       <HoverAnnounceWrapper description={`Light switch. Status: ${lightsActive ? 'On' : 'Off'}`}>
         <div 
           className={`${buttonSize} rounded-full ${
-            lightsActive ? 'bg-yellow-200/30' : 'bg-white/15'
+            lightsActive ? 'bg-accent/30' : 'bg-white/15'
           } flex justify-center items-center cursor-pointer hover:bg-white/25 transition-all`}
           onClick={(e) => {
             e.stopPropagation();
@@ -286,7 +287,7 @@ const SmartHomeControls = ({
             );
           }}
         >
-          <span className="text-xs">💡</span>
+          <Lightbulb className="w-3 h-3" />
         </div>
       </HoverAnnounceWrapper>
       
@@ -299,7 +300,7 @@ const SmartHomeControls = ({
             triggerHapticFeedback('Temperature control');
           }}
         >
-          <span className="text-xs">🌡️</span>
+          <Thermometer className="w-3 h-3" />
         </div>
       </HoverAnnounceWrapper>
       
@@ -331,7 +332,7 @@ const SmartHomeControls = ({
           {/* Connection indicator */}
           <div 
             className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border border-black/10 ${
-              bluetoothConnected ? 'bg-green-500' : 'bg-red-500'
+              bluetoothConnected ? 'bg-chart-2' : 'bg-destructive'
             }`}
           ></div>
         </div>

@@ -1,4 +1,5 @@
 import { useAccessibility } from '@/context/accessibilityContext/AccessibilityContext';
+import { Accessibility } from 'lucide-react';
 
 const AccessibilityControls = () => {
   const { 
@@ -22,12 +23,12 @@ const AccessibilityControls = () => {
   };
   
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start bg-indigo-50 p-4 rounded-lg border border-indigo-100 mt-6">
+    <div className="flex flex-col md:flex-row justify-between items-start bg-secondary p-4 rounded-lg border border-border mt-6">
       <div className="flex flex-col md:mr-4">
-        <h3 className="font-bold text-indigo-700 flex items-center gap-2 mb-1">
-          <span aria-hidden="true">♿</span> Accessibility Options
+        <h3 className="font-bold text-secondary-foreground flex items-center gap-2 mb-1">
+          <Accessibility className="w-5 h-5" /> Accessibility Options
         </h3>
-        <p className="text-indigo-800 text-sm">
+        <p className="text-secondary-foreground text-sm">
           Enable screen reader mode to have all actions announced through voice.
         </p>
       </div>
@@ -35,7 +36,7 @@ const AccessibilityControls = () => {
       <div className="flex flex-col mt-3 md:mt-0 space-y-4">
         {/* Screen Reader Toggle */}
         <div className="flex items-center">
-          <label htmlFor="screen-reader-toggle" className="mr-3 text-sm font-medium text-indigo-700">
+          <label htmlFor="screen-reader-toggle" className="mr-3 text-sm font-medium text-secondary-foreground">
             Screen Reader
           </label>
           <div className="relative inline-block w-12 mr-2 align-middle select-none">
@@ -44,17 +45,17 @@ const AccessibilityControls = () => {
               type="checkbox"
               checked={isScreenReaderEnabled}
               onChange={handleToggleScreenReader}
-              className="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="absolute block w-6 h-6 rounded-full bg-card border-4 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
               style={{
                 top: '0',
                 left: isScreenReaderEnabled ? '22px' : '0',
                 transition: 'left 0.2s ease-in-out',
-                borderColor: isScreenReaderEnabled ? '#6366f1' : '#d1d5db'
+                borderColor: isScreenReaderEnabled ? 'hsl(var(--primary))' : 'hsl(var(--muted))'
               }}
             />
             <label 
               htmlFor="screen-reader-toggle" 
-              className={`block overflow-hidden h-6 rounded-full cursor-pointer ${isScreenReaderEnabled ? 'bg-indigo-500' : 'bg-gray-300'}`}
+              className={`block overflow-hidden h-6 rounded-full cursor-pointer ${isScreenReaderEnabled ? 'bg-primary' : 'bg-muted'}`}
               style={{ transition: 'background-color 0.2s ease-in-out' }}
             ></label>
           </div>
@@ -63,7 +64,7 @@ const AccessibilityControls = () => {
         {/* Hover Announcements Toggle - Only visible when screen reader is enabled */}
         {isScreenReaderEnabled && (
           <div className="flex items-center">
-            <label htmlFor="hover-announce-toggle" className="mr-3 text-sm font-medium text-indigo-700">
+            <label htmlFor="hover-announce-toggle" className="mr-3 text-sm font-medium text-secondary-foreground">
               Hover Announcements
             </label>
             <div className="relative inline-block w-12 mr-2 align-middle select-none">
@@ -72,17 +73,17 @@ const AccessibilityControls = () => {
                 type="checkbox"
                 checked={isHoverAnnouncementEnabled}
                 onChange={handleToggleHoverAnnouncements}
-                className="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="absolute block w-6 h-6 rounded-full bg-card border-4 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
                 style={{
                   top: '0',
                   left: isHoverAnnouncementEnabled ? '22px' : '0',
                   transition: 'left 0.2s ease-in-out',
-                  borderColor: isHoverAnnouncementEnabled ? '#6366f1' : '#d1d5db'
+                  borderColor: isHoverAnnouncementEnabled ? 'hsl(var(--primary))' : 'hsl(var(--muted))'
                 }}
               />
               <label 
                 htmlFor="hover-announce-toggle" 
-                className={`block overflow-hidden h-6 rounded-full cursor-pointer ${isHoverAnnouncementEnabled ? 'bg-indigo-500' : 'bg-gray-300'}`}
+                className={`block overflow-hidden h-6 rounded-full cursor-pointer ${isHoverAnnouncementEnabled ? 'bg-primary' : 'bg-muted'}`}
                 style={{ transition: 'background-color 0.2s ease-in-out' }}
               ></label>
             </div>
@@ -93,7 +94,7 @@ const AccessibilityControls = () => {
         {isScreenReaderEnabled && (
           <button 
             onClick={handleTestVoice} 
-            className="px-3 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="px-3 py-1 text-xs rounded bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring"
             aria-label="Test screen reader voice"
           >
             Test Voice

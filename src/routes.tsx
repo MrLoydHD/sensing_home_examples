@@ -5,6 +5,7 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const SofaArmConcept = lazy(() => import('./pages/SofaArmConcept'));
 const SteeringWheelConcept = lazy(() => import('./pages/SteeringWheelConcept'));
 const UserGuidance = lazy(() => import('./pages/UserGuidance'));
+const VehicleDoor = lazy(() => import('./pages/VehicleDoor'));
 
 export const routes = [
     {
@@ -32,6 +33,11 @@ export const routes = [
                     {
                         path: '/examples/steering-wheel',
                         element: <Suspense fallback={<div>Loading...</div>}><SteeringWheelConcept /></Suspense>,
+                        errorElement: <div>Oops! Something went wrong.</div>
+                    },
+                    {
+                        path: '/examples/vehicle-door',
+                        element: <Suspense fallback={<div>Loading...</div>}><VehicleDoor /></Suspense>,
                         errorElement: <div>Oops! Something went wrong.</div>
                     }
                 ]

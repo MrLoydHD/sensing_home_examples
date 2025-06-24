@@ -12,29 +12,29 @@ const CurrentStateView: React.FC<CurrentStateViewProps> = ({ activeState, render
         return {
           title: 'Invisible Interface',
           description: 'The interface blends completely with the sofa material, preserving aesthetics while remaining available when needed.',
-          bgColor: 'bg-gray-50',
-          textColor: 'text-gray-600'
+          bgColor: 'bg-muted',
+          textColor: 'text-muted-foreground'
         };
       case 'proximity':
         return {
           title: 'Context-Aware Activation',
           description: 'Proximity sensors detect hand movement and reveal basic controls, adapting to the current entertainment context.',
-          bgColor: 'bg-blue-50',
-          textColor: 'text-blue-600'
+          bgColor: 'bg-secondary',
+          textColor: 'text-primary'
         };
       case 'active':
         return {
           title: 'Full Control Interface',
           description: 'The full interface provides intuitive control over media playback, volume, and smart home features with haptic feedback.',
-          bgColor: 'bg-blue-100/50',
-          textColor: 'text-blue-700'
+          bgColor: 'bg-accent/50',
+          textColor: 'text-accent-foreground'
         };
       default:
         return {
           title: 'Unknown State',
           description: '',
-          bgColor: 'bg-gray-50',
-          textColor: 'text-gray-600'
+          bgColor: 'bg-muted',
+          textColor: 'text-muted-foreground'
         };
     }
   };
@@ -42,8 +42,8 @@ const CurrentStateView: React.FC<CurrentStateViewProps> = ({ activeState, render
   const stateDetails = getStateDetails(activeState);
 
   return (
-    <div className="mt-6 bg-white rounded-xl p-5 shadow-md">
-      <h2 className="text-gray-800 mb-5 text-xl border-b border-gray-200 pb-3">
+    <div className="mt-6 bg-card rounded-xl p-5 shadow-md">
+      <h2 className="text-card-foreground mb-5 text-xl border-b border-border pb-3">
         Current View: {activeState.charAt(0).toUpperCase() + activeState.slice(1)} State
       </h2>
       
@@ -56,7 +56,7 @@ const CurrentStateView: React.FC<CurrentStateViewProps> = ({ activeState, render
         <h3 className={`mt-0 ${stateDetails.textColor}`}>
           {stateDetails.title}
         </h3>
-        <p className="m-0 text-gray-600">
+        <p className="m-0 text-muted-foreground">
           {stateDetails.description}
         </p>
       </div>

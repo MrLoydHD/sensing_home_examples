@@ -1,5 +1,6 @@
 // Enhanced SofaArmConcept.jsx with accessibility features
 import { useState, useEffect, type SetStateAction } from 'react';
+import { Volume2 } from 'lucide-react';
 import InactiveSofaArm from './components/InactiveSofaArm';
 import ProximitySofaArm from './components/ProximitySofaArm';
 import ActiveSofaArm from './components/ActiveSofaArm';
@@ -145,24 +146,24 @@ const SofaArmConceptWithFeatures = () => {
   // Render the concept
   return (
     <div className="max-w-7xl mx-auto p-6 md:p-8">
-      <div className="bg-gray-50 rounded-xl shadow-md p-6 md:p-8">
-        <h1 className="text-gray-800 border-b-2 border-blue-500 pb-3 text-2xl md:text-3xl text-center mb-6">
+      <div className="bg-card rounded-xl shadow-md p-6 md:p-8">
+        <h1 className="text-card-foreground border-b-2 border-primary pb-3 text-2xl md:text-3xl text-center mb-6">
           Sofa Arm with Integrated Media Controls
         </h1>
         
-        <p className="text-gray-600 leading-relaxed text-base">
+        <p className="text-muted-foreground leading-relaxed text-base">
           A seamless touch panel embedded within the arm of a sofa, allowing users to control connected media devices without a traditional remote. The panel remains invisible when not in use, illuminates essential controls when a hand approaches, and provides intuitive access to media and smart home functions.
         </p>
         
         {/* Haptic sound feature callout */}
-        <div className="bg-yellow-50 p-4 rounded-lg mt-4 border border-yellow-200">
-          <h3 className="font-bold text-yellow-700 flex items-center gap-2">
-            <span>🔊</span> Haptic Sound Feedback
+        <div className="bg-secondary p-4 rounded-lg mt-4 border border-border">
+          <h3 className="font-bold text-secondary-foreground flex items-center gap-2">
+            <Volume2 className="w-5 h-5" /> Haptic Sound Feedback
           </h3>
-          <p className="text-yellow-800 text-sm mt-1">
+          <p className="text-secondary-foreground text-sm mt-1">
             This demo includes sound-based haptic feedback. Each interaction produces unique audio feedback that simulates the physical vibration you would feel in a real implementation.
             {isScreenReaderEnabled && (
-              <span className="block mt-2 text-green-700 font-semibold">
+              <span className="block mt-2 text-chart-2 font-semibold">
                 Screen reader mode is active. All actions will be spoken aloud.
               </span>
             )}
@@ -170,9 +171,9 @@ const SofaArmConceptWithFeatures = () => {
         </div>
         
         {/* Interactive demonstration - click to cycle through states */}
-        <div className="bg-blue-50 p-4 rounded-lg mt-6 text-center border border-blue-100">
-          <h3 className="m-0 mb-2 text-blue-600">Interactive Demo</h3>
-          <p className="m-0 mb-4 text-sm text-gray-600">
+        <div className="bg-muted p-4 rounded-lg mt-6 text-center border border-border">
+          <h3 className="m-0 mb-2 text-primary">Interactive Demo</h3>
+          <p className="m-0 mb-4 text-sm text-muted-foreground">
             Click on the states below to see different interaction modes
           </p>
           
